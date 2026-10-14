@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,6 +45,7 @@ class ProtectedControllerTest {
         assertEquals("5", response.getHeaders().getFirst("X-RateLimit-Limit"));
         assertEquals("0", response.getHeaders().getFirst("X-RateLimit-Remaining"));
         assertEquals("28", response.getHeaders().getFirst("Retry-After"));
+        assertNotNull(response.getHeaders().getFirst("X-RateLimit-Reset"));
     }
     @Test
     void shouldRejectInvalidClientId() {

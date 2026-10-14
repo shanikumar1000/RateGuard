@@ -47,6 +47,8 @@ public class ProtectedController {
 
             headers.set("Retry-After",
                     String.valueOf(Math.max(1, retryAfter)));
+                    headers.set("X-RateLimit-Reset",
+            String.valueOf(System.currentTimeMillis() / 1000 + retryAfter));
 
             return ResponseEntity
                     .status(HttpStatus.TOO_MANY_REQUESTS)
