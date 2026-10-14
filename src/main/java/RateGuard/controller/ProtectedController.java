@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 @RestController
 public class ProtectedController {
@@ -20,9 +21,10 @@ public class ProtectedController {
     }
 
     @GetMapping("/api/protected")
-    public ResponseEntity<String> protectedEndpoint() {
+    public ResponseEntity<String> protectedEndpoint(
+        @RequestHeader(value = "X-Client-Id", defaultValue = "anonymous") String requesterId) {
 
-        String requesterId = "student101";
+        
 
         long count = rateLimiterService.recordRequest(requesterId);
 
