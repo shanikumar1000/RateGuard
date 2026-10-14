@@ -1,6 +1,8 @@
 
 package RateGuard.controller;
 import RateGuard.model.HealthResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,24 +17,27 @@ public class HealthController {
     }
 
     @GetMapping("/api/health")
-public HealthResponse checkHealth() {
+public ResponseEntity<HealthResponse> checkHealth() {
     try {
         redisTemplate.getConnectionFactory()
                 .getConnection()
                 .ping();
 
-        return new HealthResponse(
-                "UP",
-                "RateGuard is running.",
-                "CONNECTED"
+        return ResponseEntity.ok(
+                new HealthResponse(
+                        "UP",
+                        "RateGuard is running.",
+                        "CONNECTED"
+                )
         );
 
     } catch (Exception e) {
-        return new HealthResponse(
-                "DOWN",
-                "RateGuard is running, but Redis is unavailable.",
-                "DISCONNECTED"
-        );
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(new HealthResponse(
+                        "DOWN",
+                        "RateGuard is running, but Redis is unavailable.",
+                        "DISCONNECTED"
+                ));
     }
 }
 
