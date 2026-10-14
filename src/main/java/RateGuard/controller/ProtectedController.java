@@ -1,6 +1,6 @@
 
 package RateGuard.controller;
-
+import RateGuard.model.ApiResponse;
 import RateGuard.service.RateLimiterService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ public class ProtectedController {
     }
 
     @GetMapping("/api/protected")
-    public ResponseEntity<String> protectedEndpoint(
+    public ResponseEntity<ApiResponse> protectedEndpoint(
         @RequestHeader("X-Client-Id") String requesterId) {
             if (requesterId == null || !requesterId.matches("[a-zA-Z0-9_-]{1,50}")) {
     throw new ResponseStatusException(
@@ -51,14 +51,22 @@ public class ProtectedController {
             String.valueOf(System.currentTimeMillis() / 1000 + retryAfter));
 
             return ResponseEntity
-                    .status(HttpStatus.TOO_MANY_REQUESTS)
-                    .headers(headers)
-                    .body("Rate limit exceeded. Try again later.");
+        .status(HttpStatus.TOO_MANY_REQUESTS)
+        .headers(headers)
+        .body(new ApiResponse(
+                "Rate limit exceeded. Try again later.",
+                requesterId,
+                remaining
+        ));
         }
 
         return ResponseEntity
-                .ok()
-                .headers(headers)
-                .body("Request allowed! Welcome to RateGuard.");
+        .ok()
+        .headers(headers)
+        .body(new ApiResponse(
+                "Request allowed! Welcome to RateGuard.",
+                requesterId,
+                remaining
+        ));
     }
 }

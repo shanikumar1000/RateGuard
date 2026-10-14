@@ -1,6 +1,6 @@
 
 package RateGuard.controller;
-
+import RateGuard.model.ApiResponse;
 import RateGuard.service.RateLimiterService;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,7 @@ class ProtectedControllerTest {
 
         when(service.recordRequest("clientA")).thenReturn(1L);
 
-        ResponseEntity<String> response = controller.protectedEndpoint("clientA");
+        ResponseEntity<ApiResponse> response = controller.protectedEndpoint("clientA");
 
         assertEquals(200, response.getStatusCode().value());
         assertEquals("5", response.getHeaders().getFirst("X-RateLimit-Limit"));
@@ -39,7 +39,7 @@ class ProtectedControllerTest {
         when(service.recordRequest("clientA")).thenReturn(6L);
         when(service.getRemainingWindowSeconds("clientA")).thenReturn(28L);
 
-        ResponseEntity<String> response = controller.protectedEndpoint("clientA");
+        ResponseEntity<ApiResponse> response = controller.protectedEndpoint("clientA");
 
         assertEquals(429, response.getStatusCode().value());
         assertEquals("5", response.getHeaders().getFirst("X-RateLimit-Limit"));
