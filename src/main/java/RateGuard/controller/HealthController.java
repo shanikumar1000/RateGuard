@@ -1,6 +1,6 @@
 
 package RateGuard.controller;
-
+import RateGuard.model.HealthResponse;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,9 +15,9 @@ public class HealthController {
     }
 
     @GetMapping("/api/health")
-    public String checkHealth() {
-        return "RateGuard is running.";
-    }
+public HealthResponse checkHealth() {
+    return new HealthResponse("UP", "RateGuard is running.");
+}
 
     @GetMapping("/api/redis-test")
     public String testRedis() {
