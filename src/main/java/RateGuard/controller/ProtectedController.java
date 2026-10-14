@@ -9,13 +9,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.server.ResponseStatusException;
-
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RequestHeader;
 @RestController
 public class ProtectedController {
 
     private static final long REQUEST_LIMIT = 5;
 
     private final RateLimiterService rateLimiterService;
+    @Value("${rateguard.api-key}")
+private String expectedApiKey;
 
     public ProtectedController(RateLimiterService rateLimiterService) {
         this.rateLimiterService = rateLimiterService;
@@ -23,7 +26,16 @@ public class ProtectedController {
 
     @GetMapping("/api/protected")
     public ResponseEntity<ApiResponse> protectedEndpoint(
-        @RequestHeader("X-Client-Id") String requesterId) {
+        @RequestHeader("X-Client-Id") String requesterId,
+        @RequestHeader(value = "X-API-Key", required = false) String apiKey) {
+            if (apiKey == null || !apiKey.equals(expectedApiKey)) {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .body(new ApiResponse(
+                    "Invalid or missing API key.",
+                    null,
+                    0
+            ));
+}
             if (requesterId == null || !requesterId.matches("[a-zA-Z0-9_-]{1,50}")) {
     throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST,
