@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class ProtectedController {
@@ -22,7 +23,13 @@ public class ProtectedController {
 
     @GetMapping("/api/protected")
     public ResponseEntity<String> protectedEndpoint(
-        @RequestHeader(value = "X-Client-Id", defaultValue = "anonymous") String requesterId) {
+        @RequestHeader("X-Client-Id") String requesterId) {
+            if (requesterId == null || !requesterId.matches("[a-zA-Z0-9_-]{1,50}")) {
+    throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST,
+            "Invalid X-Client-Id. Use 1-50 letters, numbers, hyphens, or underscores."
+    );
+}
 
         
 

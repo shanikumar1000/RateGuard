@@ -16,9 +16,9 @@ class ProtectedControllerTest {
         RateLimiterService service = mock(RateLimiterService.class);
         ProtectedController controller = new ProtectedController(service);
 
-        when(service.recordRequest("student101")).thenReturn(1L);
+        when(service.recordRequest("clientA")).thenReturn(1L);
 
-        ResponseEntity<String> response = controller.protectedEndpoint();
+        ResponseEntity<String> response = controller.protectedEndpoint("clientA");
 
         assertEquals(200, response.getStatusCode().value());
         assertEquals("5", response.getHeaders().getFirst("X-RateLimit-Limit"));
@@ -30,10 +30,10 @@ class ProtectedControllerTest {
         RateLimiterService service = mock(RateLimiterService.class);
         ProtectedController controller = new ProtectedController(service);
 
-        when(service.recordRequest("student101")).thenReturn(6L);
-        when(service.getRemainingWindowSeconds("student101")).thenReturn(28L);
+        when(service.recordRequest("clientA")).thenReturn(6L);
+        when(service.getRemainingWindowSeconds("clientA")).thenReturn(28L);
 
-        ResponseEntity<String> response = controller.protectedEndpoint();
+        ResponseEntity<String> response = controller.protectedEndpoint("clientA");
 
         assertEquals(429, response.getStatusCode().value());
         assertEquals("5", response.getHeaders().getFirst("X-RateLimit-Limit"));
