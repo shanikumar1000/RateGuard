@@ -4,6 +4,7 @@ package RateGuard.controller;
 import RateGuard.service.RateLimiterService;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.server.ResponseStatusException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -40,5 +41,16 @@ class ProtectedControllerTest {
         assertEquals("0", response.getHeaders().getFirst("X-RateLimit-Remaining"));
         assertEquals("28", response.getHeaders().getFirst("Retry-After"));
     }
+    @Test
+    void shouldRejectInvalidClientId() {
+        RateLimiterService service = mock(RateLimiterService.class);
+        ProtectedController controller = new ProtectedController(service);
 
+        ResponseStatusException exception = org.junit.jupiter.api.Assertions.assertThrows(
+                ResponseStatusException.class,
+                () -> controller.protectedEndpoint("client A")
+        );
+
+        assertEquals(400, exception.getStatusCode().value());
+    }
 }
