@@ -5,6 +5,10 @@ import RateGuard.service.RateLimiterService;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -52,5 +56,17 @@ class ProtectedControllerTest {
         );
 
         assertEquals(400, exception.getStatusCode().value());
+    }
+    @Test
+    void shouldRejectRequestWhenClientIdHeaderIsMissing() throws Exception {
+        RateLimiterService service = mock(RateLimiterService.class);
+        ProtectedController controller = new ProtectedController(service);
+
+        MockMvc mockMvc = MockMvcBuilders
+                .standaloneSetup(controller)
+                .build();
+
+        mockMvc.perform(get("/api/protected"))
+                .andExpect(status().isBadRequest());
     }
 }
