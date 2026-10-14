@@ -36,12 +36,5 @@ public HealthResponse checkHealth() {
     }
 }
 
-    @GetMapping("/api/redis-test")
-    public String testRedis() {
-        redisTemplate.opsForValue().set("rateguard:test", "Redis connected successfully!");
-
-        String result = redisTemplate.opsForValue().get("rateguard:test");
-
-        return result;
-    }
+    
 }
