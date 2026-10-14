@@ -16,7 +16,24 @@ public class HealthController {
 
     @GetMapping("/api/health")
 public HealthResponse checkHealth() {
-    return new HealthResponse("UP", "RateGuard is running.");
+    try {
+        redisTemplate.getConnectionFactory()
+                .getConnection()
+                .ping();
+
+        return new HealthResponse(
+                "UP",
+                "RateGuard is running.",
+                "CONNECTED"
+        );
+
+    } catch (Exception e) {
+        return new HealthResponse(
+                "DOWN",
+                "RateGuard is running, but Redis is unavailable.",
+                "DISCONNECTED"
+        );
+    }
 }
 
     @GetMapping("/api/redis-test")

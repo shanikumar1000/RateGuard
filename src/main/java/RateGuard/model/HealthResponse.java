@@ -4,10 +4,12 @@ public class HealthResponse {
 
     private String status;
     private String message;
+    private String redis;
 
-    public HealthResponse(String status, String message) {
+    public HealthResponse(String status, String message, String redis) {
         this.status = status;
         this.message = message;
+        this.redis = redis;
     }
 
     public String getStatus() {
@@ -16,5 +18,9 @@ public class HealthResponse {
 
     public String getMessage() {
         return message;
+    }
+
+    public String getRedis() {
+        return redis;
     }
 }
